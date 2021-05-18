@@ -30,24 +30,9 @@ class DataImporter:
         return parameters
 
     def __load_data(self):
-        train_data = pd.read_csv(self.__parameters["data_path"], encoding="utf-8", sep=self.__parameters["separator"])
+        train_data = self.__load_multiple_datasets(phase="train")
 
-        train_data = train_data.drop_duplicates()
-
-        train_data[self.__parameters["label_column"]] = pd.to_numeric(train_data[self.__parameters["label_column"]],
-                                                                      errors="coerce",
-                                                                      downcast="integer")
-
-        train_data = train_data.sample(frac=1.0).reset_index(drop=True)
-
-        text_column = train_data[self.__parameters["text_column"]]
-
-        label_column = train_data[self.__parameters["label_column"]]
-
-        train_texts, test_texts, train_labels, test_labels = train_test_split(text_column, label_column,
-                                                                              test_size=(1 - self.__parameters[
-                                                                                  "train_split"]),
-                                                                              stratify=label_column)
+        train_texts, test_texts, train_labels, test_labels = self.__get_train_test_sets(train_data)
 
         train_texts = train_texts.tolist()
 
@@ -68,6 +53,43 @@ class DataImporter:
         self.__train_labels = train_labels
 
         self.__test_labels = test_labels
+
+    def __get_train_test_sets(self, train_data):
+        train_texts = train_data[self.__parameters["text_column"]]
+
+        train_labels = train_data[self.__parameters["label_column"]]
+
+        if len(self.__parameters["data_paths"]["dev"]) == 0:
+            return train_test_split(train_texts, train_labels, test_size=(1 - self.__parameters["train_split"]),
+                                    stratify=train_labels)
+
+        dev_set = self.__load_multiple_datasets("dev")
+
+        test_texts = dev_set[self.__parameters["text_column"]]
+
+        test_labels = dev_set[self.__parameters["label_column"]]
+
+        return train_texts, test_texts, train_labels, test_labels
+
+    def __load_multiple_datasets(self, phase: str = "train"):
+        phases = self.__parameters["data_paths"][phase]
+
+        dataframes = []
+
+        for phase in phases:
+            dataframes.append(pd.read_csv(phase["path"], encoding="utf-8", sep=phase["separator"]))
+
+        data = pd.concat(dataframes, axis=1)
+
+        data = data.drop_duplicates()
+
+        data[self.__parameters["label_column"]] = pd.to_numeric(data[self.__parameters["label_column"]],
+                                                                errors="coerce",
+                                                                downcast="integer")
+
+        data = data.sample(frac=1.0).reset_index(drop=True)
+
+        return data
 
     def get_training_data(self) -> tuple:
         return self.__train_sequences, self.__train_labels

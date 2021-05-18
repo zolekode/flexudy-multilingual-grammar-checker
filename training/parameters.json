@@ -1,7 +1,24 @@
 {
   "task": "Grammar Checker",
   "output_directory": "../artefacts/",
-  "data_path": "../data/in_domain_train.tsv",
+  "data_paths": {
+    "train": [
+      {
+        "path": "../data/in_domain_train.tsv",
+        "separator": "\t"
+      }
+    ],
+    "dev": [
+      {
+        "path": "../data/in_domain_dev.tsv",
+        "separator": "\t"
+      },
+      {
+        "path": "../data/out_of_domain_dev.tsv",
+        "separator": "\t"
+      }
+    ]
+  },
   "logging_steps": 10,
   "n_iterations": 4,
   "train_batch_size": 32,
@@ -14,7 +31,6 @@
   "sentence_transformer": "distiluse-base-multilingual-cased-v2",
   "dropout": 0.01,
   "embedding_size": 512,
-  "separator": "\t",
   "cuda": false,
   "num_workers": 0
 }
