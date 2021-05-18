@@ -38,8 +38,6 @@ class DataImporter:
                                                                       errors="coerce",
                                                                       downcast="integer")
 
-        train_data = train_data.dropna()
-
         train_data = train_data.sample(frac=1.0).reset_index(drop=True)
 
         text_column = train_data[self.__parameters["text_column"]]

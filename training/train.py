@@ -20,7 +20,9 @@ sentence_encoder = SentenceTransformer(parameters["sentence_transformer"])
 if parameters["cuda"]:
     sentence_encoder = sentence_encoder.cuda()
 
-data_module = SequenceClassificationDataModule(data_importer, sentence_encoder)
+data_module = SequenceClassificationDataModule(data_importer, sentence_encoder,
+                                               batch_size=parameters["train_batch_size"],
+                                               num_workers=parameters["num_workers"])
 
 optimizer = Adam(model.parameters(), lr=parameters["learning_rate"], amsgrad=True,
                  weight_decay=parameters["weight_decay"])
