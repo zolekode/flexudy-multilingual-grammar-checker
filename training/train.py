@@ -21,7 +21,7 @@ if parameters["cuda"]:
     sentence_encoder = sentence_encoder.cuda()
 
 data_module = SequenceClassificationDataModule(data_importer, sentence_encoder,
-                                               batch_size=parameters["train_batch_size"],
+                                               batch_size=parameters["batch_size"],
                                                num_workers=parameters["num_workers"])
 
 optimizer = Adam(model.parameters(), lr=parameters["learning_rate"], amsgrad=True,
@@ -37,7 +37,7 @@ trainer = Trainer(model, loss_function, optimizer, train_data_loader, test_data_
 
 # trainer.restore_checkpoint(100)  # .25 88% .28
 
-losses = trainer.fit(parameters["n_iterations"])
+losses = trainer.fit(parameters["num_iterations"])
 
 plt.plot(np.arange(len(losses[0])), losses[0], label="train loss")
 

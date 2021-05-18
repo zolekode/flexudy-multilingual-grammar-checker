@@ -30,7 +30,7 @@ class DataImporter:
         return parameters
 
     def __load_data(self):
-        train_data = self.__load_multiple_datasets(phase="train")
+        train_data = self.__load_multiple_datasets(phase_key="train")
 
         train_texts, test_texts, train_labels, test_labels = self.__get_train_test_sets(train_data)
 
@@ -71,15 +71,15 @@ class DataImporter:
 
         return train_texts, test_texts, train_labels, test_labels
 
-    def __load_multiple_datasets(self, phase: str = "train"):
-        phases = self.__parameters["data_paths"][phase]
+    def __load_multiple_datasets(self, phase_key: str = "train"):
+        phases = self.__parameters["data_paths"][phase_key]
 
         dataframes = []
 
         for phase in phases:
             dataframes.append(pd.read_csv(phase["path"], encoding="utf-8", sep=phase["separator"]))
 
-        data = pd.concat(dataframes, axis=1)
+        data = pd.concat(dataframes)
 
         data = data.drop_duplicates()
 
@@ -88,6 +88,10 @@ class DataImporter:
                                                                 downcast="integer")
 
         data = data.sample(frac=1.0).reset_index(drop=True)
+
+        print("PHASE: " + phase_key.upper())
+
+        print(data.describe())
 
         return data
 
