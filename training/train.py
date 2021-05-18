@@ -9,17 +9,21 @@ import numpy as np
 
 path_to_parameters = "parameters.json"
 
-data_importer = DataImporter(path_to_parameters)
+parameters = DataImporter.load_parameters(path_to_parameters)
 
-model = SentenceClassificationModule(512, 64, dropout=0.25)
+data_importer = DataImporter(parameters)
 
-sentence_encoder = SentenceTransformer('distiluse-base-multilingual-cased-v2')
+model = SentenceClassificationModule(parameters["embedding_size"], 64, dropout=parameters["dropout"])
 
-sentence_encoder = sentence_encoder.cuda()
+sentence_encoder = SentenceTransformer(parameters["sentence_transformer"])
+
+if parameters["cuda"]:
+    sentence_encoder = sentence_encoder.cuda()
 
 data_module = SequenceClassificationDataModule(data_importer, sentence_encoder)
 
-optimizer = Adam(model.parameters(), lr=0.001, amsgrad=True)
+optimizer = Adam(model.parameters(), lr=parameters["learning_rate"], amsgrad=True,
+                 weight_decay=parameters["weight_decay"])
 
 train_data_loader = data_module.get_train_data_loader()
 
@@ -27,11 +31,11 @@ test_data_loader = data_module.get_test_data_loader()
 
 loss_function = BCELoss()
 
-trainer = Trainer(model, loss_function, optimizer, train_data_loader, test_data_loader, sentence_encoder)
+trainer = Trainer(model, loss_function, optimizer, train_data_loader, test_data_loader, parameters["cuda"])
 
 # trainer.restore_checkpoint(100)  # .25 88% .28
 
-losses = trainer.fit(10)
+losses = trainer.fit(parameters["n_iterations"])
 
 plt.plot(np.arange(len(losses[0])), losses[0], label="train loss")
 

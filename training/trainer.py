@@ -24,10 +24,10 @@ class Trainer:
             self.__loss_function = loss_function.cuda()
 
     def save_checkpoint(self, epoch):
-        t.save({'state_dict': self.__model.state_dict()}, 'checkpoints/checkpoint_{:03d}.ckp'.format(epoch))
+        t.save({'state_dict': self.__model.state_dict()}, '../artefacts/checkpoint_{:03d}.ckp'.format(epoch))
 
     def restore_checkpoint(self, epoch_n):
-        ckp = t.load('checkpoints/checkpoint_{:03d}.ckp'.format(epoch_n), 'cuda' if self.__cuda else None)
+        ckp = t.load('../artefacts/checkpoint_{:03d}.ckp'.format(epoch_n), 'cuda' if self.__cuda else None)
 
         self.__model.load_state_dict(ckp['state_dict'])
 

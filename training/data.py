@@ -9,8 +9,8 @@ import torch
 
 class DataImporter:
 
-    def __init__(self, path_to_parameters: str):
-        self.__parameters = DataImporter.__load_parameters(path_to_parameters)
+    def __init__(self, parameters: dict):
+        self.__parameters = parameters
 
         self.__train_sequences = None
 
@@ -23,14 +23,14 @@ class DataImporter:
         self.__load_data()
 
     @staticmethod
-    def __load_parameters(path_to_parameters: str) -> dict:
+    def load_parameters(path_to_parameters: str) -> dict:
         with open(path_to_parameters, "r") as fp:
             parameters = json.load(fp)
 
         return parameters
 
     def __load_data(self):
-        train_data = pd.read_csv(self.__parameters["data_path"], encoding="utf-8")
+        train_data = pd.read_csv(self.__parameters["data_path"], encoding="utf-8", sep=self.__parameters["separator"])
 
         train_data = train_data.drop_duplicates()
 
