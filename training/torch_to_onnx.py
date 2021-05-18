@@ -8,7 +8,7 @@ model = SentenceClassificationModule(512, 64)
 
 
 def restore_checkpoint(epoch_n):
-    ckp = t.load('checkpoints/checkpoint_{:03d}.ckp'.format(epoch_n), None)
+    ckp = t.load('../artefacts/checkpoint_{:03d}.ckp'.format(epoch_n), None)
 
     model.load_state_dict(ckp['state_dict'])
 
@@ -24,7 +24,7 @@ sample_input = torch.randn(batch_size, 1, 512, requires_grad=True)
 
 output = model(sample_input)
 
-model_name = "flexudy_sentence_scorer.onnx"
+model_name = "flexudy_grammar_checker.onnx"
 
 # Export the model
 torch.onnx.export(model,

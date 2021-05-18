@@ -6,7 +6,7 @@
   "n_iterations": 4,
   "train_batch_size": 32,
   "test_batch_size": 32,
-  "weight_decay": 0.1,
+  "weight_decay": 0.01,
   "train_split": 0.85,
   "label_column": "label",
   "text_column": "sentence",
