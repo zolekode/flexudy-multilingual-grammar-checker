@@ -89,7 +89,7 @@ class DataImporter:
 
         data = data.sample(frac=1.0).reset_index(drop=True)
 
-        print("PHASE: " + phase_key.upper())
+        print("PHASE: " + phase_key.upper() + "\n")
 
         print(data.describe())
 
